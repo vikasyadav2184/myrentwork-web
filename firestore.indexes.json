@@ -1,0 +1,237 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "buildingDetails",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "managerIds",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "buildingDetails",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "uid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "discontinuedTenant",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "buildingId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "discontinuedTenant",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "buildingId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "discontinueDate",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "discontinuedTenant",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "buildingId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "flatnumber",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "discontinuedTenant",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "buildingId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "tenantName",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "maintenanceHistory",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "buildingId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "expenseDate",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "paymentHistory",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "buildingId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "paymentDate",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "paymentHistory",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "paymentType",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "tenantId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "paymentHistory",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "paymentType",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "userId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "paymentHistory",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "tenantId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "paymentHistory",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "userId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "tempManager",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "ownerId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "uName",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "tenantDetails",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "buildingId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "tenantDetails",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "buildingId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sequenceTime",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "transaction",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "tenantId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}
