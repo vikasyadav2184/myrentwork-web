@@ -21,10 +21,6 @@ jobs:
           node-version: '22' # Latest LTS version
           cache: 'npm' # Enables caching for faster builds
 
-      # Step 3: Install dependencies
-      - name: Install project dependencies
-        run: npm ci
-
       # Step 4: Install Firebase CLI
       - name: Install Firebase CLI
         run: npm install -g firebase-tools
