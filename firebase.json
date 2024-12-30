@@ -2,23 +2,5 @@
   "firestore": {
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
-  },
-  "hosting": {
-    "public": "dist",
-    "github": {
-      "repo": "vikasyadav2184/myrentwork-web",
-      "branch": "main" // or specify your desired branch
-    },
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
-    "rewrites": [
-      {
-        "source": "**",
-        "destination": "/index.html"
-      }
-    ]
   }
 }
