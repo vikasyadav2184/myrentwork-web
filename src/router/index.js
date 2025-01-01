@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import LoginView from '../views/Login.vue'
 import DashboardView from '../views/Dashboard.vue'
 import NotFoundView from '../views/NotFound.vue'
+import SettingsView from '../views/Settings.vue'
 import { auth } from '../main';
 
 
@@ -21,6 +22,12 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: '/settings',
+      name: 'settings',
+      component: SettingsView,
+      meta: { requiresAuth: true },
+    },
+    {
       path: '/:catchAll(.*)', // Catch-all route
       name: 'not-found',
       component: NotFoundView,
@@ -37,8 +44,20 @@ const router = createRouter({
   ],
 })
 
+
+// Handle route guards
 router.beforeEach(async (to, from) => {
-  const user = auth.currentUser;
+  // Ensure Firebase auth state is resolved before proceeding
+  const checkAuthState = () => {
+    return new Promise((resolve) => {
+      const unsubscribe = auth.onAuthStateChanged((user) => {
+        unsubscribe(); // Unsubscribe to prevent memory leaks
+        resolve(user);
+      });
+    });
+  };
+
+  const user = await checkAuthState();
 
   // Redirect logged-in users from login page to dashboard
   if (to.name === 'login' && user) {
@@ -56,20 +75,6 @@ router.beforeEach(async (to, from) => {
   }
 });
 
-// router.beforeEach((to, from, next) => {
-//   if (to.matched.some(record => record.meta.requiresAuth)) {
-//     // this route requires auth, check if logged in
-//     // if not, redirect to login page.
-//     if (!auth.currentUser) {
-//       next({ name: 'login' })
-//     } else {
-//       next() // go to wherever I'm going
-//     }
-//   } else {
-//     next() // does not require auth, make sure to always call next()!
-//   }
-// })
-
 
 // Function to reset the router
 export function resetRouter() {
@@ -80,6 +85,7 @@ export function resetRouter() {
         path: '/',
         name: 'login',
         component: LoginView,
+        meta: { requiresAuth: false },
       },
     ], // Only keep the login route
   });

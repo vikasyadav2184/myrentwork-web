@@ -4,6 +4,7 @@ import { auth } from './main';
 import { onAuthStateChanged } from 'firebase/auth';
 
 import SideBarMenu from './views/SideBarMenu.vue';
+import HeaderView from './views/Header.vue';
 import { useRouter } from 'vue-router';
 
 const isLoggedIn = ref(false); // Tracks login state
@@ -38,7 +39,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="row">
+  
     <!-- Show a loading spinner or placeholder until Firebase is initialized -->
     <div v-if="!isAuthInitialized" class="loading-screen">
       <div class="spinner-border text-primary" role="status">
@@ -48,19 +49,22 @@ onMounted(() => {
 
     <!-- Main application UI -->
     <div v-else>
-      <!-- Sidebar is visible only when logged in -->
-      <header v-if="isLoggedIn">
-        <nav>
-          <SideBarMenu />
-        </nav>
-      </header>
+      <HeaderView />
+      <div class="container-fluid">
+        <div class="row">
+          <!-- Sidebar is visible only when logged in -->
+          <div v-if="isLoggedIn" :class="{ ['sidebar border border-right col-md-3 col-lg-2 p-0 bg-body-tertiary']: isLoggedIn }">
+            <SideBarMenu />
+          </div>
 
-      <main>
-        <!-- Main content -->
-        <router-view />
-      </main>
+        
+            <!-- Main content -->
+            <router-view />
+         
+        </div>
+      </div>
     </div>
-  </div>
+  
 </template>
 
 <style scoped>

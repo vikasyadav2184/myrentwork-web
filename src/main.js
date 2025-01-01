@@ -26,6 +26,14 @@ const firebaseapp = initializeApp(firebaseConfig);
 const auth = getAuth(firebaseapp);
 const db = getFirestore(firebaseapp);
 
+// Import Bootstrap CSS
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+// Import Bootstrap Icons CSS
+import 'bootstrap-icons/font/bootstrap-icons.css';
+
+// Import Bootstrap JavaScript
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 // Initialize Vue application
 const app = createApp(App);
