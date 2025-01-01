@@ -1,9 +1,76 @@
 <script setup>
-import LoginView from './views/LoginView.vue'
+import { ref, onMounted } from 'vue';
+import { auth } from './main';
+import { onAuthStateChanged } from 'firebase/auth';
+
+import SideBarMenu from './views/SideBarMenu.vue';
+import { useRouter } from 'vue-router';
+
+const isLoggedIn = ref(false); // Tracks login state
+const isAuthInitialized = ref(false); // Tracks whether Firebase auth state is initialized
+const router = useRouter(); // Access the router
+
+// Listen to authentication state changes
+onAuthStateChanged(auth, (user) => {
+  isAuthInitialized.value = true; // Firebase initialization is complete
+
+  if (user) {
+    isLoggedIn.value = true; // User is logged in
+    // Redirect to dashboard if on login page
+    if (router.currentRoute.value.name === 'login') {
+      router.push('/dashboard');
+    }
+  } else {
+    isLoggedIn.value = false; // User is logged out
+    // Redirect to login page if not already there
+    if (router.currentRoute.value.meta.requiresAuth) {
+      router.push('/');
+    }
+  }
+});
+
+// Ensure the app waits for Firebase initialization before showing any components
+onMounted(() => {
+  if (!isAuthInitialized.value) {
+    console.log('Waiting for Firebase to initialize...');
+  }
+});
 </script>
 
 <template>
-  <LoginView />
+  <div class="row">
+    <!-- Show a loading spinner or placeholder until Firebase is initialized -->
+    <div v-if="!isAuthInitialized" class="loading-screen">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+
+    <!-- Main application UI -->
+    <div v-else>
+      <!-- Sidebar is visible only when logged in -->
+      <header v-if="isLoggedIn">
+        <nav>
+          <SideBarMenu />
+        </nav>
+      </header>
+
+      <main>
+        <!-- Main content -->
+        <router-view />
+      </main>
+    </div>
+  </div>
 </template>
 
-<style></style>
+<style scoped>
+/* Center the loading spinner on the screen */
+.loading-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100%;
+  background-color: #f8f9fa; /* Optional: Light background for the loading screen */
+}
+</style>
