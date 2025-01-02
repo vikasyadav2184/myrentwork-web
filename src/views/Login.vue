@@ -5,8 +5,8 @@ import { auth } from '../main';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 
 // Refs for DOM manipulation and state
-const email = ref('vdrall624@gmail.com');
-const password = ref('123456');
+const email = ref('');
+const password = ref('');
 const message = ref('');
 const router = useRouter(); // Initialize router instance
 
