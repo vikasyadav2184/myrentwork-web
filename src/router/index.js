@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import LoginView from '../views/Login.vue'
 import DashboardView from '../views/Dashboard.vue'
 import NotFoundView from '../views/NotFound.vue'
-import SettingsView from '../views/Settings.vue'
+import ActiveUsersView from '../views/ActiveUsers.vue'
 import { auth } from '../main';
 
 
@@ -22,11 +22,12 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
-      path: '/settings',
-      name: 'settings',
-      component: SettingsView,
+      path: '/activeusers',
+      name: 'activeusers',
+      component: ActiveUsersView,
       meta: { requiresAuth: true },
     },
+    
     {
       path: '/:catchAll(.*)', // Catch-all route
       name: 'not-found',

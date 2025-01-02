@@ -35,7 +35,14 @@ const handleSignOut = async () => {
           <li class="nav-item">
             <!-- Example 1: Basic Usage -->
             <AppLink to="/dashboard" customClass="d-flex gap-2">
-              <i class="bi bi-house"></i>Dashboard
+              <i class="bi bi-house-fill"></i>Dashboard
+            </AppLink>
+          </li>
+
+          <li class="nav-item">
+            <!-- Example 1: Basic Usage -->
+            <AppLink to="/activeusers" customClass="d-flex gap-2">
+              <i class="bi bi-people-fill"></i>Active Users
             </AppLink>
           </li>
           
@@ -66,14 +73,10 @@ const handleSignOut = async () => {
         <hr class="my-3">
 
         <ul class="nav flex-column mb-auto">
-          <li class="nav-item">
-            <AppLink to="/settings" customClass="d-flex gap-2">
-              <i class="bi bi-gear-wide-connected"></i>Settings
-            </AppLink>
-          </li>
+
           <li class="nav-item">
             <AppLink logout customClass="nav-link d-flex gap-2 text-danger" @click="handleSignOut">
-              <i class="bi bi-door-closed"></i>
+              <i class="bi bi-door-closed-fill"></i>
               Sign out
             </AppLink>
            
@@ -105,10 +108,12 @@ const handleSignOut = async () => {
 
 .sidebar .nav-link {
   color: #555;
+
 }
 
 .sidebar .nav-link.active {
   color: #2470dc;
+  font-weight: 600;
 }
 
 .sidebar-heading {
