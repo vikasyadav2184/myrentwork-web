@@ -167,7 +167,7 @@
       });
       const searchQuery = ref("");
       const currentPage = ref(1);
-      const pageSize = 10;
+      const pageSize = 30;
       const totalRecords = ref(0);
       const totalPages = computed(() => Math.ceil(totalRecords.value / pageSize));
       const lastVisible = ref(null);
@@ -176,7 +176,7 @@
       const sortOrder = ref("desc");
       const currentFilter = ref("48 hrs");
   
-      const maxVisiblePages = 5;
+      const maxVisiblePages = 10;
   
       const startPage = computed(() => Math.max(currentPage.value - Math.floor(maxVisiblePages / 2), 1));
       const endPage = computed(() => Math.min(startPage.value + maxVisiblePages - 1, totalPages.value));
