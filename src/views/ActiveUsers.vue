@@ -73,9 +73,9 @@
               <i :class="sortOrder === 'asc' ? 'bi bi-arrow-up' : 'bi bi-arrow-down'"></i>
             </span>
           </th>
-          <th @click="sortBy('notificationToken.lastupdated')">
+          <th @click="sortBy('lastLoginTime')">
             Last Sign-In
-            <span v-if="sortColumn === 'notificationToken.lastupdated'" class="ms-1">
+            <span v-if="sortColumn === 'lastLoginTime'" class="ms-1">
               <i :class="sortOrder === 'asc' ? 'bi bi-arrow-up' : 'bi bi-arrow-down'"></i>
             </span>
           </th>
@@ -87,8 +87,8 @@
           <td>{{ user.u_name || "N/A" }}</td>
           <td>{{ user.u_phone }}</td>
           <td>{{ formatDate(user.created_at) }}</td>
-          <td>{{ formatDate(user.notificationToken?.lastupdated) }}</td>
-          <td>{{ calculateDaysBefore(user.notificationToken?.lastupdated) }}</td>
+          <td>{{ formatDate(user.lastLoginTime) }}</td>
+          <td>{{ calculateDaysBefore(user.lastLoginTime) }}</td>
         </tr>
       </tbody>
     </table>
@@ -172,7 +172,7 @@ export default {
     const totalPages = computed(() => Math.ceil(totalRecords.value / pageSize));
     const lastVisible = ref(null);
     const hasNextPage = ref(true);
-    const sortColumn = ref("notificationToken.lastupdated");
+    const sortColumn = ref("lastLoginTime");
     const sortOrder = ref("desc");
     const currentFilter = ref("48 hrs");
 
@@ -223,7 +223,7 @@ export default {
         const countQuery = query(
           collection(db, "users"),
           ...(filterTimestamp !== null
-            ? [where("notificationToken.lastupdated", ">=", filterTimestamp)]
+            ? [where("lastLoginTime", ">=", filterTimestamp)]
             : []),
           where("u_phone", ">=", searchQuery.value),
           where("u_phone", "<=", searchQuery.value + "\uf8ff")
@@ -236,7 +236,7 @@ export default {
         const baseQuery = query(
           collection(db, "users"),
           ...(filterTimestamp !== null
-            ? [where("notificationToken.lastupdated", ">=", filterTimestamp)]
+            ? [where("lastLoginTime", ">=", filterTimestamp)]
             : []),
           orderBy("u_phone"),
           where("u_phone", ">=", searchQuery.value),
@@ -302,7 +302,7 @@ export default {
         const baseQuery = query(
           collection(db, "users"),
           ...(filterTimestamp !== null
-            ? [where("notificationToken.lastupdated", ">=", filterTimestamp)]
+            ? [where("lastLoginTime", ">=", filterTimestamp)]
             : [])
         );
   
@@ -347,9 +347,9 @@ export default {
           }
         let baseQuery = query(
           collection(db, "users"),
-          orderBy("notificationToken.lastupdated", sortOrder.value),
+          orderBy("lastLoginTime", sortOrder.value),
             ...(filterTimestamp !== null
-              ? [where("notificationToken.lastupdated", ">=", filterTimestamp)]
+              ? [where("lastLoginTime", ">=", filterTimestamp)]
               : []),
             limit(pageSize)
          
@@ -460,9 +460,9 @@ export default {
 
       const baseQuery = query(
         collection(db, "users"),
-        orderBy("notificationToken.lastupdated", sortOrder.value),
+        orderBy("lastLoginTime", sortOrder.value),
         ...(filterTimestamp !== null
-          ? [where("notificationToken.lastupdated", ">=", filterTimestamp)]
+          ? [where("lastLoginTime", ">=", filterTimestamp)]
           : []),
         ...(searchQuery.value
           ? [
