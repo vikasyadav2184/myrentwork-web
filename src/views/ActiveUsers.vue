@@ -67,9 +67,9 @@
               <i :class="sortOrder === 'asc' ? 'bi bi-arrow-up' : 'bi bi-arrow-down'"></i>
             </span>
           </th>
-          <th @click="sortBy('created_at')">
+          <th @click="sortBy('createdAt')">
             Created On
-            <span v-if="sortColumn === 'created_at'" class="ms-1">
+            <span v-if="sortColumn === 'createdAt'" class="ms-1">
               <i :class="sortOrder === 'asc' ? 'bi bi-arrow-up' : 'bi bi-arrow-down'"></i>
             </span>
           </th>
@@ -86,7 +86,7 @@
         <tr v-for="user in filteredUsers" :key="user.id">
           <td>{{ user.u_name || "N/A" }}</td>
           <td>{{ user.u_phone }}</td>
-          <td>{{ formatDate(user.created_at) }}</td>
+          <td>{{ formatDate(user.createdAt) }}</td>
           <td>{{ formatDate(user.lastLoginTime) }}</td>
           <td>{{ calculateDaysBefore(user.lastLoginTime) }}</td>
         </tr>
@@ -484,7 +484,7 @@ export default {
         csvRows.push([
           user.u_name || "N/A",
           user.u_phone,
-          formatDate(user.created_at),
+          formatDate(user.createdAt),
           formatDate(user.notificationToken?.lastupdated),
           calculateDaysBefore(user.notificationToken?.lastupdated)
         ]);
