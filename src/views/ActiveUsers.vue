@@ -48,7 +48,7 @@
     </div>
 
     <!-- User List Table -->
-    <table class="table table-bordered">
+    <table class="table table-bordered user-log-table">
       <thead>
         <tr>
           <th @click="sortBy('u_name')">
@@ -82,14 +82,8 @@
         <tr v-for="user in filteredUsers" :key="user.id">
           <td>{{ user.u_name || "N/A" }}</td>
           <td>{{ user.u_phone }}
-            <button 
-              class="btn btn-sm btn-outline-secondary ms-2" 
-              :id="'copy-btn-' + user.id" 
-              @click="copyToClipboard(user.u_phone, user.id)"
-              data-bs-toggle="tooltip" 
-              data-bs-placement="top" 
-              title=""
-            >
+            <button class="btn btn-sm btn-outline-secondary ms-2" :title="'Copy ' + user.u_phone"
+              @click="copyToClipboard(user.u_phone, $event)">
               <i class="bi bi-clipboard"></i>
             </button>
           </td>
@@ -145,6 +139,7 @@
 
 <script>
 import { ref, computed, onMounted } from "vue";
+
 import {
   collection,
   query,
@@ -155,7 +150,7 @@ import {
   getCountFromServer,
   getDocs,
 } from "firebase/firestore";
-import { Tooltip } from 'bootstrap';
+
 import { db } from "../main";
 
 export default {
@@ -191,45 +186,14 @@ export default {
 
 
 
-    const copyToClipboard = (text, userId) => {
-      navigator.clipboard.writeText(text).then(() => {
-        showTooltip(userId, "Copied!");
-      }).catch(() => {
-        showTooltip(userId, "Failed to copy");
-      });
-    };
-
-    const showTooltip = (userId, message) => {
-      const button = document.getElementById(`copy-btn-${userId}`);
-
-      if (!button) return;  // ✅ Prevents errors if button doesn't exist
-
-      // Safely get the existing tooltip instance
-      let tooltip = Tooltip.getInstance(button);
-     
-      if (tooltip) {
-        tooltip.dispose();  // ✅ Safely dispose of any existing tooltip
-      }
-      
-      // Set the tooltip message
-      button.setAttribute("data-bs-original-title", message);
-
-      // Initialize and show the tooltip
-      tooltip = new Tooltip(button, {
-        trigger: 'manual',
-        placement: 'top'
-      });
-
-      tooltip.show();
-
-      // Safely hide the tooltip after 1.5 seconds
-      setTimeout(() => {
-      
-        if (tooltip) {
-          tooltip.hide();
-        }
-        button.setAttribute("data-bs-original-title", "");
-      }, 500);
+    const copyToClipboard = (text, userId, event) => {
+    navigator.clipboard.writeText(text)
+        .then(() => {
+          console.log("Copied:", text);  // Feedback in console (optional)
+        })
+        .catch((err) => {
+          console.error("Failed to copy:", err);
+        });
     };
 
 
@@ -373,12 +337,6 @@ export default {
       }
 
     };
-
-    // const fetchTotalRecords = async () => {
-    //   // Replace this with your actual method to fetch total records count
-    //   totalRecords.value = 100; // Example value, update with your count logic
-    //   totalPages.value = Math.ceil(totalRecords.value / pageSize);
-    // };
 
     const fetchUsers = async (direction = "next", filter = "48 hrs") => {
       try {
@@ -575,11 +533,6 @@ export default {
     onMounted(async () => {
       await fetchTotalRecords("48 hrs");
       await fetchUsers("next", "48 hrs");
-
-      const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-      tooltipTriggerList.forEach((tooltipTriggerEl) => {
-        new Tooltip(tooltipTriggerEl);
-      });
     });
 
     return {
@@ -612,4 +565,8 @@ export default {
 </script>
 
 
-<style></style>
+<style>
+.tooltip {
+  pointer-events: none !important;
+}
+</style>
