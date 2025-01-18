@@ -1,35 +1,31 @@
 <template>
+  <!-- Full Page Loading Overlay -->
+  <div v-if="isLoading" class="loading-overlay">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
   <div class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
     <!-- Page Heading -->
-    <div class="d-flex justify-content-between align-items-center mb-3">
-    <h3>Active/Inactive Users</h3>
-    <!-- Export Button -->
-    <button class="btn btn-success" @click="exportToCSV">Export to CSV</button>
-  </div>
+    <div class="d-flex justify-content-between align-items-center mt-3 mb-3">
+      <h3>Users Logs</h3>
+      <!-- Export Button -->
+      <button class="btn btn-success" @click="exportToCSV">Export to CSV</button>
+    </div>
 
     <!-- Search and Filter Section -->
     <div class="d-flex align-items-center mb-3">
       <!-- Search Box -->
       <div class="me-3">
-        <input
-          type="text"
-          class="form-control"
-          placeholder="Search by phone number"
-          v-model="searchQuery"
-          @input="searchPhoneNumber"
-        />
+        <input type="text" class="form-control" placeholder="Search by phone number" v-model="searchQuery"
+          @input="searchPhoneNumber" />
       </div>
 
       <!-- Filter Dropdown -->
       <div>
         <div class="dropdown">
-          <button
-            class="btn btn-primary dropdown-toggle"
-            type="button"
-            id="filterDropdown"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
+          <button class="btn btn-primary dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown"
+            aria-expanded="false">
             Filter: {{ currentFilter }}
           </button>
           <ul class="dropdown-menu" aria-labelledby="filterDropdown">
@@ -68,13 +64,13 @@
             </span>
           </th>
           <th @click="sortBy('createdAt')">
-            Created On
+            A/C Created On
             <span v-if="sortColumn === 'createdAt'" class="ms-1">
               <i :class="sortOrder === 'asc' ? 'bi bi-arrow-up' : 'bi bi-arrow-down'"></i>
             </span>
           </th>
           <th @click="sortBy('lastLoginTime')">
-            Last Sign-In
+            Last Login/Sign-In Date
             <span v-if="sortColumn === 'lastLoginTime'" class="ms-1">
               <i :class="sortOrder === 'asc' ? 'bi bi-arrow-up' : 'bi bi-arrow-down'"></i>
             </span>
@@ -85,7 +81,18 @@
       <tbody>
         <tr v-for="user in filteredUsers" :key="user.id">
           <td>{{ user.u_name || "N/A" }}</td>
-          <td>{{ user.u_phone }}</td>
+          <td>{{ user.u_phone }}
+            <button 
+              class="btn btn-sm btn-outline-secondary ms-2" 
+              :id="'copy-btn-' + user.id" 
+              @click="copyToClipboard(user.u_phone, user.id)"
+              data-bs-toggle="tooltip" 
+              data-bs-placement="top" 
+              title=""
+            >
+              <i class="bi bi-clipboard"></i>
+            </button>
+          </td>
           <td>{{ formatDate(user.createdAt) }}</td>
           <td>{{ formatDate(user.lastLoginTime) }}</td>
           <td>{{ calculateDaysBefore(user.lastLoginTime) }}</td>
@@ -112,13 +119,8 @@
         </li>
 
         <!-- Dynamic Page Numbers -->
-        <li
-          class="page-item"
-          :class="{ active: page === currentPage }"
-          v-for="page in displayedPages"
-          :key="page"
-          @click="changePage(page)"
-        >
+        <li class="page-item" :class="{ active: page === currentPage }" v-for="page in displayedPages" :key="page"
+          @click="changePage(page)">
           <a class="page-link" href="#">{{ page }}</a>
         </li>
 
@@ -153,6 +155,7 @@ import {
   getCountFromServer,
   getDocs,
 } from "firebase/firestore";
+import { Tooltip } from 'bootstrap';
 import { db } from "../main";
 
 export default {
@@ -175,7 +178,7 @@ export default {
     const sortColumn = ref("lastLoginTime");
     const sortOrder = ref("desc");
     const currentFilter = ref("48 hrs");
-
+    const isLoading = ref(false);
     const maxVisiblePages = 10;
 
     const startPage = computed(() => Math.max(currentPage.value - Math.floor(maxVisiblePages / 2), 1));
@@ -183,11 +186,56 @@ export default {
 
 
     const pageSnapshots = ref([]); // Track snapshots for each page
-    
+
     const hasPreviousPage = computed(() => currentPage.value > 1);
-    
+
+
+
+    const copyToClipboard = (text, userId) => {
+      navigator.clipboard.writeText(text).then(() => {
+        showTooltip(userId, "Copied!");
+      }).catch(() => {
+        showTooltip(userId, "Failed to copy");
+      });
+    };
+
+    const showTooltip = (userId, message) => {
+      const button = document.getElementById(`copy-btn-${userId}`);
+
+      if (!button) return;  // ✅ Prevents errors if button doesn't exist
+
+      // Safely get the existing tooltip instance
+      let tooltip = Tooltip.getInstance(button);
+     
+      if (tooltip) {
+        tooltip.dispose();  // ✅ Safely dispose of any existing tooltip
+      }
+      
+      // Set the tooltip message
+      button.setAttribute("data-bs-original-title", message);
+
+      // Initialize and show the tooltip
+      tooltip = new Tooltip(button, {
+        trigger: 'manual',
+        placement: 'top'
+      });
+
+      tooltip.show();
+
+      // Safely hide the tooltip after 1.5 seconds
+      setTimeout(() => {
+      
+        if (tooltip) {
+          tooltip.hide();
+        }
+        button.setAttribute("data-bs-original-title", "");
+      }, 500);
+    };
+
+
     const searchPhoneNumber = async () => {
       try {
+        isLoading.value = true;
         currentPage.value = 1; // Reset to the first page
         lastVisible.value = null; // Reset pagination
 
@@ -259,7 +307,10 @@ export default {
         }
       } catch (error) {
         console.error("Error searching phone numbers:", error);
+      } finally {
+        isLoading.value = false;  // Stop loading
       }
+
     };
 
     const displayedPages = computed(() => {
@@ -272,9 +323,11 @@ export default {
     });
 
     const fetchTotalRecords = async (filter) => {
+      try {
+        isLoading.value = true;
         const now = Date.now();
         let filterTimestamp;
-  
+
         switch (filter) {
           case "48 hrs":
             filterTimestamp = now - 48 * 60 * 60 * 1000;
@@ -298,18 +351,28 @@ export default {
           default:
             filterTimestamp = null;
         }
-  
+
         const baseQuery = query(
           collection(db, "users"),
           ...(filterTimestamp !== null
             ? [where("lastLoginTime", ">=", filterTimestamp)]
-            : [])
+            : []),
+          where("u_phone", ">=", searchQuery.value),
+          where("u_phone", "<=", searchQuery.value + "\uf8ff")
+
         );
-  
+
         const snapshot = await getCountFromServer(baseQuery);
-        totalRecords.value = snapshot.data().count;
-        totalPages.value = Math.ceil(totalRecords.value / pageSize);
-      };
+        totalRecords.value = await snapshot.data().count;
+        totalPages.value = await Math.ceil(totalRecords.value / pageSize);
+      }
+      catch (error) {
+        console.error("Error fetching total records:", error);
+      } finally {
+        isLoading.value = false;  // Stop loading
+      }
+
+    };
 
     // const fetchTotalRecords = async () => {
     //   // Replace this with your actual method to fetch total records count
@@ -319,40 +382,45 @@ export default {
 
     const fetchUsers = async (direction = "next", filter = "48 hrs") => {
       try {
+        isLoading.value = false;
         const now = Date.now();
-          let filterTimestamp;
-  
-          switch (filter) {
-            case "48 hrs":
-              filterTimestamp = now - 48 * 60 * 60 * 1000;
-              break;
-            case "7 days":
-              filterTimestamp = now - 7 * 24 * 60 * 60 * 1000;
-              break;
-            case "15 days":
-              filterTimestamp = now - 15 * 24 * 60 * 60 * 1000;
-              break;
-            case "30 days":
-              filterTimestamp = now - 30 * 24 * 60 * 60 * 1000;
-              break;
-            case "60 days":
-              filterTimestamp = now - 60 * 24 * 60 * 60 * 1000;
-              break;
-            case "90 days":
-              filterTimestamp = now - 90 * 24 * 60 * 60 * 1000;
-              break;
-            case "All users":
-            default:
-              filterTimestamp = null;
-          }
+        let filterTimestamp;
+
+        switch (filter) {
+          case "48 hrs":
+            filterTimestamp = now - 48 * 60 * 60 * 1000;
+            break;
+          case "7 days":
+            filterTimestamp = now - 7 * 24 * 60 * 60 * 1000;
+            break;
+          case "15 days":
+            filterTimestamp = now - 15 * 24 * 60 * 60 * 1000;
+            break;
+          case "30 days":
+            filterTimestamp = now - 30 * 24 * 60 * 60 * 1000;
+            break;
+          case "60 days":
+            filterTimestamp = now - 60 * 24 * 60 * 60 * 1000;
+            break;
+          case "90 days":
+            filterTimestamp = now - 90 * 24 * 60 * 60 * 1000;
+            break;
+          case "All users":
+          default:
+            filterTimestamp = null;
+        }
         let baseQuery = query(
           collection(db, "users"),
-          orderBy("lastLoginTime", sortOrder.value),
-            ...(filterTimestamp !== null
-              ? [where("lastLoginTime", ">=", filterTimestamp)]
-              : []),
-            limit(pageSize)
-         
+          orderBy(sortColumn.value, sortOrder.value),
+          ...(filterTimestamp !== null
+            ? [where("lastLoginTime", ">=", filterTimestamp)]
+            : []),
+
+          where("u_phone", ">=", searchQuery.value),
+          where("u_phone", "<=", searchQuery.value + "\uf8ff"),
+
+          limit(pageSize)
+
         );
 
         if (direction === "next" && pageSnapshots.value[currentPage.value - 1]) {
@@ -375,54 +443,57 @@ export default {
       } catch (error) {
         console.error("Error fetching users:", error);
       }
+      finally {
+        isLoading.value = false;  // Stop loading
+      }
     };
 
     const changePage = async (pageOrDirection) => {
       if (pageOrDirection === "next" && hasNextPage.value) {
         currentPage.value++;
-        await fetchUsers("next",currentFilter.value);
+        await fetchUsers("next", currentFilter.value);
       } else if (pageOrDirection === "previous" && hasPreviousPage.value) {
         currentPage.value--;
-        await fetchUsers("next",currentFilter.value);
+        await fetchUsers("next", currentFilter.value);
       } else if (typeof pageOrDirection === "number" && pageOrDirection !== currentPage.value) {
         currentPage.value = pageOrDirection;
-        await fetchUsers("next",currentFilter.value);
+        await fetchUsers("next", currentFilter.value);
       }
     };
 
     const sortBy = async (column) => {
-        if (sortColumn.value === column) {
-          sortOrder.value = sortOrder.value === "asc" ? "desc" : "asc";
-        } else {
-          sortColumn.value = column;
-          sortOrder.value = "asc";
-        }
-        currentPage.value = 1;
-        lastVisible.value = null;
-        await fetchUsers("next", currentFilter.value);
-      };
+      if (sortColumn.value === column) {
+        sortOrder.value = sortOrder.value === "asc" ? "desc" : "asc";
+      } else {
+        sortColumn.value = column;
+        sortOrder.value = "asc";
+      }
+      currentPage.value = 1;
+      lastVisible.value = null;
+      await fetchUsers("next", currentFilter.value);
+    };
 
     const formatDate = (timestamp) => {
-        if (!timestamp) return "N/A";
-        const date = new Date(Number(timestamp));
-        return date.toLocaleDateString() + " " + date.toLocaleTimeString();
-      };
+      if (!timestamp) return "N/A";
+      const date = new Date(Number(timestamp));
+      return date.toLocaleDateString() + " " + date.toLocaleTimeString();
+    };
 
-      const calculateDaysBefore = (timestamp) => {
-        if (!timestamp) return "N/A";
-        const now = Date.now();
-        const lastLogin = Number(timestamp);
-        const differenceInDays = Math.floor((now - lastLogin) / (24 * 60 * 60 * 1000));
-        return differenceInDays;
-      };
+    const calculateDaysBefore = (timestamp) => {
+      if (!timestamp) return "N/A";
+      const now = Date.now();
+      const lastLogin = Number(timestamp);
+      const differenceInDays = Math.floor((now - lastLogin) / (24 * 60 * 60 * 1000));
+      return differenceInDays;
+    };
 
-      const applyFilter = async (filter) => {
-        currentFilter.value = filter;
-        currentPage.value = 1;
-        pageSnapshots.value = [];
-        await fetchTotalRecords(filter); // Fetch total records for the new filter
-        await fetchUsers("next", filter);
-      };
+    const applyFilter = async (filter) => {
+      currentFilter.value = filter;
+      currentPage.value = 1;
+      pageSnapshots.value = [];
+      await fetchTotalRecords(filter); // Fetch total records for the new filter
+      await fetchUsers("next", filter);
+    };
 
 
     const exportToCSV = async () => {
@@ -466,9 +537,9 @@ export default {
           : []),
         ...(searchQuery.value
           ? [
-              where("u_phone", ">=", searchQuery.value),
-              where("u_phone", "<=", searchQuery.value + "\uf8ff")
-            ]
+            where("u_phone", ">=", searchQuery.value),
+            where("u_phone", "<=", searchQuery.value + "\uf8ff")
+          ]
           : [])
       );
 
@@ -504,6 +575,11 @@ export default {
     onMounted(async () => {
       await fetchTotalRecords("48 hrs");
       await fetchUsers("next", "48 hrs");
+
+      const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+      tooltipTriggerList.forEach((tooltipTriggerEl) => {
+        new Tooltip(tooltipTriggerEl);
+      });
     });
 
     return {
@@ -528,7 +604,12 @@ export default {
       totalRecords,
       sortColumn,
       sortOrder,
+      isLoading,
+      copyToClipboard
     };
   },
 };
 </script>
+
+
+<style></style>

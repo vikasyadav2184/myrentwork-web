@@ -42,7 +42,7 @@ const handleSignOut = async () => {
           <li class="nav-item">
             <!-- Example 1: Basic Usage -->
             <AppLink to="/activeusers" customClass="d-flex gap-2">
-              <i class="bi bi-people-fill"></i>Active Users
+              <i class="bi bi-people-fill"></i>Users Logs
             </AppLink>
           </li>
           

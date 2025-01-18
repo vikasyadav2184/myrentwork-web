@@ -41,7 +41,7 @@ onMounted(() => {
 <template>
   
     <!-- Show a loading spinner or placeholder until Firebase is initialized -->
-    <div v-if="!isAuthInitialized" class="loading-screen">
+    <div v-if="!isAuthInitialized" class="loading-overlay">
       <div class="spinner-border text-primary" role="status">
         <span class="visually-hidden">Loading...</span>
       </div>
@@ -67,14 +67,18 @@ onMounted(() => {
   
 </template>
 
-<style scoped>
+<style>
 /* Center the loading spinner on the screen */
-.loading-screen {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
-  background-color: #f8f9fa; /* Optional: Light background for the loading screen */
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
 }
 </style>
