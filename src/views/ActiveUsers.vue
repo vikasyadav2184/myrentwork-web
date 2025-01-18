@@ -81,11 +81,12 @@
       <tbody>
         <tr v-for="user in filteredUsers" :key="user.id">
           <td>{{ user.u_name || "N/A" }}</td>
-          <td>{{ user.u_phone }}
+          <td>
             <button class="btn btn-sm btn-outline-secondary ms-2" :title="'Copy ' + user.u_phone"
               @click="copyToClipboard(user.u_phone, $event)">
               <i class="bi bi-clipboard"></i>
             </button>
+            {{ user.u_phone }}
           </td>
           <td>{{ formatDate(user.createdAt) }}</td>
           <td>{{ formatDate(user.lastLoginTime) }}</td>
